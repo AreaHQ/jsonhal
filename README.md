@@ -12,8 +12,8 @@ Example:
 package main
 
 import (
-  "encoding/json"
-  "log"
+	"encoding/json"
+	"log"
 
 	"github.com/areatech/jsonhal"
 )
@@ -32,31 +32,31 @@ type Foobar struct {
 }
 
 func main() {
-  var (
-    helloWorld *HelloWorld
-    jsonResponse []byte
-    err error
-  )
+	var (
+		helloWorld   *HelloWorld
+		jsonResponse []byte
+		err          error
+	)
 
-  helloWorld = &HelloWorld{ID: 1, Name: "Hello World"}
+	helloWorld = &HelloWorld{ID: 1, Name: "Hello World"}
 	helloWorld.SetLink("self", "/v1/hello/world/1", "")
 
-  jsonResponse, err = json.Marshal(helloWorld)
-  if err != nil {
-    log.Fatal(err)
-  }
+	jsonResponse, err = json.Marshal(helloWorld)
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Print(string(jsonResponse))
-  // {
-  // 	"_links": {
-  // 		"self": {
-  // 			"href": "/v1/hello/world/1"
-  // 		}
-  // 	},
-  // 	"id": 1,
-  // 	"name": "Hello World"
-  // }
+	// {
+	// 	"_links": {
+	// 		"self": {
+	// 			"href": "/v1/hello/world/1"
+	// 		}
+	// 	},
+	// 	"id": 1,
+	// 	"name": "Hello World"
+	// }
 
-  helloWorld = &HelloWorld{ID: 1, Name: "Hello World"}
+	helloWorld = &HelloWorld{ID: 1, Name: "Hello World"}
 	helloWorld.SetLink(
 		"self", // name
 		"/v1/hello/world?offset=2&limit=2", // href
@@ -72,31 +72,31 @@ func main() {
 		"/v1/hello/world?offset=0&limit=2", // href
 		"", // title
 	)
-  jsonResponse, err = json.Marshal(helloWorld)
-  if err != nil {
-    log.Fatal(err)
-  }
+	jsonResponse, err = json.Marshal(helloWorld)
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Print(string(jsonResponse))
-  // {
-  // 	"_links": {
-  // 		"next": {
-  // 			"href": "/v1/hello/world?offset=4\u0026limit=2"
-  // 		},
-  // 		"previous": {
-  // 			"href": "/v1/hello/world?offset=0\u0026limit=2"
-  // 		},
-  // 		"self": {
-  // 			"href": "/v1/hello/world?offset=2\u0026limit=2"
-  // 		}
-  // 	},
-  // 	"id": 1,
-  // 	"name": "Hello World"
-  // }
+	// {
+	// 	"_links": {
+	// 		"next": {
+	// 			"href": "/v1/hello/world?offset=4\u0026limit=2"
+	// 		},
+	// 		"previous": {
+	// 			"href": "/v1/hello/world?offset=0\u0026limit=2"
+	// 		},
+	// 		"self": {
+	// 			"href": "/v1/hello/world?offset=2\u0026limit=2"
+	// 		}
+	// 	},
+	// 	"id": 1,
+	// 	"name": "Hello World"
+	// }
 
-  helloWorld = &HelloWorld{ID: 1, Name: "Hello World"}
+	helloWorld = &HelloWorld{ID: 1, Name: "Hello World"}
 	helloWorld.SetLink("self", "/v1/hello/world/1", "")
 
-  // Add embedded resources
+	// Add embedded resources
 	foobars := []*Foobar{
 		&Foobar{ID: 1, Name: "Foo bar 1"},
 		&Foobar{ID: 2, Name: "Foo bar 2"},
@@ -107,28 +107,29 @@ func main() {
 	}
 	helloWorld.SetEmbedded("foobars", embeddedResources)
 
-  jsonResponse, err = json.Marshal(helloWorld)
-  if err != nil {
-    log.Fatal(err)
-  }
+	jsonResponse, err = json.Marshal(helloWorld)
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Print(string(jsonResponse))
-  // {
-  // 	"_links": {
-  // 		"self": {
-  // 			"href": "/v1/hello/world/1"
-  // 		}
-  // 	},
-  // 	"_embedded": {
-  // 		"foobars": [{
-  // 			"id": 1,
-  // 			"name": "Foo bar 1"
-  // 		}, {
-  // 			"id": 2,
-  // 			"name": "Foo bar 2"
-  // 		}]
-  // 	},
-  // 	"id": 1,
-  // 	"name": "Hello World"
-  // }
+	// {
+	// 	"_links": {
+	// 		"self": {
+	// 			"href": "/v1/hello/world/1"
+	// 		}
+	// 	},
+	// 	"_embedded": {
+	// 		"foobars": [{
+	// 			"id": 1,
+	// 			"name": "Foo bar 1"
+	// 		}, {
+	// 			"id": 2,
+	// 			"name": "Foo bar 2"
+	// 		}]
+	// 	},
+	// 	"id": 1,
+	// 	"name": "Hello World"
+	// }
 }
+
 ```
