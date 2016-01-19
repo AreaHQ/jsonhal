@@ -18,8 +18,8 @@ type Embedded interface{}
 
 // Hal is used for composition, include it as anonymous field in your structs
 type Hal struct {
-	Links    map[string]*Link      `json:"_links"`
-	Embedded map[string][]Embedded `json:"_embedded,omitempty"`
+	Links    map[string]*Link    `json:"_links"`
+	Embedded map[string]Embedded `json:"_embedded,omitempty"`
 }
 
 // SetLink sets a link (self, next, etc). Title argument is optional
@@ -43,15 +43,15 @@ func (h *Hal) GetLink(name string) (*Link, error) {
 }
 
 // SetEmbedded adds a slice of objects under a named key in the embedded map
-func (h *Hal) SetEmbedded(name string, embedded []Embedded) {
+func (h *Hal) SetEmbedded(name string, embedded Embedded) {
 	if h.Embedded == nil {
-		h.Embedded = make(map[string][]Embedded, 0)
+		h.Embedded = make(map[string]Embedded, 0)
 	}
 	h.Embedded[name] = embedded
 }
 
 // GetEmbedded returns a slice of embedded resources by name or error
-func (h *Hal) GetEmbedded(name string) ([]Embedded, error) {
+func (h *Hal) GetEmbedded(name string) (Embedded, error) {
 	if h.Embedded == nil {
 		return nil, fmt.Errorf("Embedded \"%s\" not found", name)
 	}

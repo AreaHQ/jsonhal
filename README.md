@@ -27,6 +27,7 @@ type HelloWorld struct {
 
 // Foobar ...
 type Foobar struct {
+	jsonhal.Hal
 	ID   uint   `json:"id"`
 	Name string `json:"name"`
 }
@@ -98,14 +99,26 @@ func main() {
 
 	// Add embedded resources
 	foobars := []*Foobar{
-		&Foobar{ID: 1, Name: "Foo bar 1"},
-		&Foobar{ID: 2, Name: "Foo bar 2"},
+		&Foobar{
+			Hal: jsonhal.Hal{
+				Links: map[string]*jsonhal.Link{
+					"self": &jsonhal.Link{Href: "/v1/foo/bar/1"},
+				},
+			},
+			ID:   1,
+			Name: "Foo bar 1",
+		},
+		&Foobar{
+			Hal: jsonhal.Hal{
+				Links: map[string]*jsonhal.Link{
+					"self": &jsonhal.Link{Href: "/v1/foo/bar/2"},
+				},
+			},
+			ID:   2,
+			Name: "Foo bar 2",
+		},
 	}
-	embeddedResources := make([]jsonhal.Embedded, len(foobars))
-	for i, foobar := range foobars {
-		embeddedResources[i] = jsonhal.Embedded(foobar)
-	}
-	helloWorld.SetEmbedded("foobars", embeddedResources)
+	helloWorld.SetEmbedded("foobars", Embedded(foobars))
 
 	jsonResponse, err = json.Marshal(helloWorld)
 	if err != nil {
@@ -119,17 +132,29 @@ func main() {
 	// 		}
 	// 	},
 	// 	"_embedded": {
-	// 		"foobars": [{
-	// 			"id": 1,
-	// 			"name": "Foo bar 1"
-	// 		}, {
-	// 			"id": 2,
-	// 			"name": "Foo bar 2"
-	// 		}]
+	// 		"foobars": [
+	// 			{
+	// 				"_links": {
+	// 					"self": {
+	// 						"href": "/v1/foo/bar/1"
+	// 					}
+	// 				},
+	// 				"id": 1,
+	// 				"name": "Foo bar 1"
+	// 			},
+	// 			{
+	// 				"_links": {
+	// 					"self": {
+	// 						"href": "/v1/foo/bar/2"
+	// 					}
+	// 				},
+	// 				"id": 2,
+	// 				"name": "Foo bar 2"
+	// 			}
+	// 		]
 	// 	},
 	// 	"id": 1,
 	// 	"name": "Hello World"
 	// }
 }
-
 ```

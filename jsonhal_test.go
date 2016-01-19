@@ -3,6 +3,7 @@ package jsonhal
 import (
 	"bytes"
 	"log"
+	"reflect"
 	"testing"
 
 	"encoding/json"
@@ -19,12 +20,14 @@ type HelloWorld struct {
 
 // Foobar is a simple test struct
 type Foobar struct {
+	Hal
 	ID   uint   `json:"id"`
 	Name string `json:"name"`
 }
 
 // Qux is a simple test struct
 type Qux struct {
+	Hal
 	ID   uint   `json:"id"`
 	Name string `json:"name"`
 }
@@ -51,6 +54,17 @@ var expectedJSON2 = []byte(`{
 			"href": "/v1/hello/world?offset=2\u0026limit=2"
 		}
 	},
+	"_embedded": {
+		"foobar": {
+			"_links": {
+				"self": {
+					"href": "/v1/foo/bar/1"
+				}
+			},
+			"id": 1,
+			"name": "Foo bar 1"
+		}
+	},
 	"id": 1,
 	"name": "Hello World"
 }`)
@@ -62,13 +76,26 @@ var expectedJSON3 = []byte(`{
 		}
 	},
 	"_embedded": {
-		"foobars": [{
-			"id": 1,
-			"name": "Foo bar 1"
-		}, {
-			"id": 2,
-			"name": "Foo bar 2"
-		}]
+		"foobars": [
+			{
+				"_links": {
+					"self": {
+						"href": "/v1/foo/bar/1"
+					}
+				},
+				"id": 1,
+				"name": "Foo bar 1"
+			},
+			{
+				"_links": {
+					"self": {
+						"href": "/v1/foo/bar/2"
+					}
+				},
+				"id": 2,
+				"name": "Foo bar 2"
+			}
+		]
 	},
 	"id": 1,
 	"name": "Hello World"
@@ -81,20 +108,46 @@ var expectedJSON4 = []byte(`{
 		}
 	},
 	"_embedded": {
-		"foobars": [{
-			"id": 1,
-			"name": "Foo bar 1"
-		}, {
-			"id": 2,
-			"name": "Foo bar 2"
-		}],
-		"quxes": [{
-			"id": 1,
-			"name": "Qux 1"
-		}, {
-			"id": 2,
-			"name": "Qux 2"
-		}]
+		"foobars": [
+			{
+				"_links": {
+					"self": {
+						"href": "/v1/foo/bar/1"
+					}
+				},
+				"id": 1,
+				"name": "Foo bar 1"
+			},
+			{
+				"_links": {
+					"self": {
+						"href": "/v1/foo/bar/2"
+					}
+				},
+				"id": 2,
+				"name": "Foo bar 2"
+			}
+		],
+		"quxes": [
+			{
+				"_links": {
+					"self": {
+						"href": "/v1/qux/1"
+					}
+				},
+				"id": 1,
+				"name": "Qux 1"
+			},
+			{
+				"_links": {
+					"self": {
+						"href": "/v1/qux/2"
+					}
+				},
+				"id": 2,
+				"name": "Qux 2"
+			}
+		]
 	},
 	"id": 1,
 	"name": "Hello World"
@@ -102,13 +155,13 @@ var expectedJSON4 = []byte(`{
 
 func TestHal(t *testing.T) {
 	var (
-		helloWorld        *HelloWorld
-		expected          *bytes.Buffer
-		actual            []byte
-		err               error
-		foobars           []*Foobar
-		quxes             []*Qux
-		embeddedResources []Embedded
+		helloWorld *HelloWorld
+		expected   *bytes.Buffer
+		actual     []byte
+		err        error
+		foobar     *Foobar
+		foobars    []*Foobar
+		quxes      []*Qux
 	)
 
 	// Let's test a simple scenario with just a self link
@@ -130,7 +183,7 @@ func TestHal(t *testing.T) {
 	}
 	assert.Equal(t, expected.String(), string(actual))
 
-	// Let's text more links
+	// Let's add more links and a single embedded resource
 	helloWorld = &HelloWorld{ID: 1, Name: "Hello World"}
 	helloWorld.SetLink(
 		"self", // name
@@ -147,6 +200,9 @@ func TestHal(t *testing.T) {
 		"/v1/hello/world?offset=0&limit=2", // href
 		"", // title
 	)
+	foobar = &Foobar{ID: 1, Name: "Foo bar 1"}
+	foobar.SetLink("self", "/v1/foo/bar/1", "")
+	helloWorld.SetEmbedded("foobar", Embedded(foobar))
 
 	// Assert JSON after marshalling is as expected
 	expected = bytes.NewBuffer([]byte{})
@@ -170,14 +226,26 @@ func TestHal(t *testing.T) {
 
 	// Add embedded foobars
 	foobars = []*Foobar{
-		&Foobar{ID: 1, Name: "Foo bar 1"},
-		&Foobar{ID: 2, Name: "Foo bar 2"},
+		&Foobar{
+			Hal: Hal{
+				Links: map[string]*Link{
+					"self": &Link{Href: "/v1/foo/bar/1"},
+				},
+			},
+			ID:   1,
+			Name: "Foo bar 1",
+		},
+		&Foobar{
+			Hal: Hal{
+				Links: map[string]*Link{
+					"self": &Link{Href: "/v1/foo/bar/2"},
+				},
+			},
+			ID:   2,
+			Name: "Foo bar 2",
+		},
 	}
-	embeddedResources = make([]Embedded, len(foobars))
-	for i, foobar := range foobars {
-		embeddedResources[i] = Embedded(foobar)
-	}
-	helloWorld.SetEmbedded("foobars", embeddedResources)
+	helloWorld.SetEmbedded("foobars", Embedded(foobars))
 
 	// Assert JSON after marshalling is as expected
 	expected = bytes.NewBuffer([]byte{})
@@ -201,25 +269,49 @@ func TestHal(t *testing.T) {
 
 	// Add embedded foobars
 	foobars = []*Foobar{
-		&Foobar{ID: 1, Name: "Foo bar 1"},
-		&Foobar{ID: 2, Name: "Foo bar 2"},
+		&Foobar{
+			Hal: Hal{
+				Links: map[string]*Link{
+					"self": &Link{Href: "/v1/foo/bar/1"},
+				},
+			},
+			ID:   1,
+			Name: "Foo bar 1",
+		},
+		&Foobar{
+			Hal: Hal{
+				Links: map[string]*Link{
+					"self": &Link{Href: "/v1/foo/bar/2"},
+				},
+			},
+			ID:   2,
+			Name: "Foo bar 2",
+		},
 	}
-	embeddedResources = make([]Embedded, len(foobars))
-	for i, foobar := range foobars {
-		embeddedResources[i] = Embedded(foobar)
-	}
-	helloWorld.SetEmbedded("foobars", embeddedResources)
+	helloWorld.SetEmbedded("foobars", Embedded(foobars))
 
 	// Add embedded quxes
 	quxes = []*Qux{
-		&Qux{ID: 1, Name: "Qux 1"},
-		&Qux{ID: 2, Name: "Qux 2"},
+		&Qux{
+			Hal: Hal{
+				Links: map[string]*Link{
+					"self": &Link{Href: "/v1/qux/1"},
+				},
+			},
+			ID:   1,
+			Name: "Qux 1",
+		},
+		&Qux{
+			Hal: Hal{
+				Links: map[string]*Link{
+					"self": &Link{Href: "/v1/qux/2"},
+				},
+			},
+			ID:   2,
+			Name: "Qux 2",
+		},
 	}
-	embeddedResources = make([]Embedded, len(quxes))
-	for i, qux := range quxes {
-		embeddedResources[i] = Embedded(qux)
-	}
-	helloWorld.SetEmbedded("quxes", embeddedResources)
+	helloWorld.SetEmbedded("quxes", Embedded(quxes))
 
 	// Assert JSON after marshalling is as expected
 	expected = bytes.NewBuffer([]byte{})
@@ -275,10 +367,9 @@ func TestGetEmbedded(t *testing.T) {
 	helloWorld := new(HelloWorld)
 
 	var (
-		embedded          []Embedded
-		err               error
-		foobars           []*Foobar
-		embeddedResources []Embedded
+		embedded Embedded
+		err      error
+		foobars  []*Foobar
 	)
 
 	// Test when object has no embedded resources
@@ -293,11 +384,7 @@ func TestGetEmbedded(t *testing.T) {
 		&Foobar{ID: 1, Name: "Foo bar 1"},
 		&Foobar{ID: 2, Name: "Foo bar 2"},
 	}
-	embeddedResources = make([]Embedded, len(foobars))
-	for i, foobar := range foobars {
-		embeddedResources[i] = Embedded(foobar)
-	}
-	helloWorld.SetEmbedded("foobars", embeddedResources)
+	helloWorld.SetEmbedded("foobars", Embedded(foobars))
 
 	// Test geting bogus embedded resources
 	embedded, err = helloWorld.GetEmbedded("bogus")
@@ -310,6 +397,10 @@ func TestGetEmbedded(t *testing.T) {
 	embedded, err = helloWorld.GetEmbedded("foobars")
 	assert.Nil(t, err)
 	if assert.NotNil(t, embedded) {
-		assert.Equal(t, 2, len(embedded))
+		reflectedValue := reflect.ValueOf(embedded)
+		expectedType := reflect.SliceOf(reflect.TypeOf(new(Foobar)))
+		if assert.Equal(t, expectedType, reflectedValue.Type()) {
+			assert.Equal(t, 2, reflectedValue.Len())
+		}
 	}
 }
