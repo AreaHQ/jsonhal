@@ -1,4 +1,4 @@
-[![Codeship Status for areatech/jsonhal](https://codeship.com/projects/b2f1dac0-9da7-0133-7683-1a74f7994c2d/status?branch=master)](https://codeship.com/projects/127557)
+[![Codeship Status for AreaHQ/jsonhal](https://codeship.com/projects/b2f1dac0-9da7-0133-7683-1a74f7994c2d/status?branch=master)](https://codeship.com/projects/127557)
 
 # jsonhal
 
