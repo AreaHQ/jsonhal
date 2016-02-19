@@ -33,6 +33,11 @@ type Qux struct {
 }
 
 var expectedJSON = []byte(`{
+	"id": 1,
+	"name": "Hello World"
+}`)
+
+var expectedJSON2 = []byte(`{
 	"_links": {
 		"self": {
 			"href": "/v1/hello/world/1"
@@ -42,7 +47,7 @@ var expectedJSON = []byte(`{
 	"name": "Hello World"
 }`)
 
-var expectedJSON2 = []byte(`{
+var expectedJSON3 = []byte(`{
 	"_links": {
 		"next": {
 			"href": "/v1/hello/world?offset=4\u0026limit=2"
@@ -69,7 +74,7 @@ var expectedJSON2 = []byte(`{
 	"name": "Hello World"
 }`)
 
-var expectedJSON3 = []byte(`{
+var expectedJSON4 = []byte(`{
 	"_links": {
 		"self": {
 			"href": "/v1/hello/world/1"
@@ -101,7 +106,7 @@ var expectedJSON3 = []byte(`{
 	"name": "Hello World"
 }`)
 
-var expectedJSON4 = []byte(`{
+var expectedJSON5 = []byte(`{
 	"_links": {
 		"self": {
 			"href": "/v1/hello/world/1"
@@ -164,8 +169,21 @@ func TestHal(t *testing.T) {
 		quxes      []*Qux
 	)
 
-	// Let's test a simple scenario with just a self link
+	// Let's test the simplest scenario without links
 	helloWorld = &HelloWorld{ID: 1, Name: "Hello World"}
+
+	expected = bytes.NewBuffer([]byte{})
+	err = json.Compact(expected, expectedJSON)
+	if err != nil {
+		log.Fatal(err)
+	}
+	actual, err = json.Marshal(helloWorld)
+	if err != nil {
+		log.Fatal(err)
+	}
+	assert.Equal(t, expected.String(), string(actual))
+
+	// Let's add a self link
 	helloWorld.SetLink(
 		"self",              // name
 		"/v1/hello/world/1", // href
@@ -173,7 +191,7 @@ func TestHal(t *testing.T) {
 	)
 
 	expected = bytes.NewBuffer([]byte{})
-	err = json.Compact(expected, expectedJSON)
+	err = json.Compact(expected, expectedJSON2)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -206,7 +224,7 @@ func TestHal(t *testing.T) {
 
 	// Assert JSON after marshalling is as expected
 	expected = bytes.NewBuffer([]byte{})
-	err = json.Compact(expected, expectedJSON2)
+	err = json.Compact(expected, expectedJSON3)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -249,7 +267,7 @@ func TestHal(t *testing.T) {
 
 	// Assert JSON after marshalling is as expected
 	expected = bytes.NewBuffer([]byte{})
-	err = json.Compact(expected, expectedJSON3)
+	err = json.Compact(expected, expectedJSON4)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -315,7 +333,7 @@ func TestHal(t *testing.T) {
 
 	// Assert JSON after marshalling is as expected
 	expected = bytes.NewBuffer([]byte{})
-	err = json.Compact(expected, expectedJSON4)
+	err = json.Compact(expected, expectedJSON5)
 	if err != nil {
 		log.Fatal(err)
 	}
