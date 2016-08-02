@@ -1,33 +1,33 @@
-package jsonhal
+package jsonhal_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"log"
 	"reflect"
 	"testing"
 
-	"encoding/json"
-
+	"github.com/RichardKnop/jsonhal"
 	"github.com/stretchr/testify/assert"
 )
 
 // HelloWorld is a simple test struct
 type HelloWorld struct {
-	Hal
+	jsonhal.Hal
 	ID   uint   `json:"id"`
 	Name string `json:"name"`
 }
 
 // Foobar is a simple test struct
 type Foobar struct {
-	Hal
+	jsonhal.Hal
 	ID   uint   `json:"id"`
 	Name string `json:"name"`
 }
 
 // Qux is a simple test struct
 type Qux struct {
-	Hal
+	jsonhal.Hal
 	ID   uint   `json:"id"`
 	Name string `json:"name"`
 }
@@ -220,7 +220,7 @@ func TestHal(t *testing.T) {
 	)
 	foobar = &Foobar{ID: 1, Name: "Foo bar 1"}
 	foobar.SetLink("self", "/v1/foo/bar/1", "")
-	helloWorld.SetEmbedded("foobar", Embedded(foobar))
+	helloWorld.SetEmbedded("foobar", jsonhal.Embedded(foobar))
 
 	// Assert JSON after marshalling is as expected
 	expected = bytes.NewBuffer([]byte{})
@@ -245,25 +245,25 @@ func TestHal(t *testing.T) {
 	// Add embedded foobars
 	foobars = []*Foobar{
 		&Foobar{
-			Hal: Hal{
-				Links: map[string]*Link{
-					"self": &Link{Href: "/v1/foo/bar/1"},
+			Hal: jsonhal.Hal{
+				Links: map[string]*jsonhal.Link{
+					"self": &jsonhal.Link{Href: "/v1/foo/bar/1"},
 				},
 			},
 			ID:   1,
 			Name: "Foo bar 1",
 		},
 		&Foobar{
-			Hal: Hal{
-				Links: map[string]*Link{
-					"self": &Link{Href: "/v1/foo/bar/2"},
+			Hal: jsonhal.Hal{
+				Links: map[string]*jsonhal.Link{
+					"self": &jsonhal.Link{Href: "/v1/foo/bar/2"},
 				},
 			},
 			ID:   2,
 			Name: "Foo bar 2",
 		},
 	}
-	helloWorld.SetEmbedded("foobars", Embedded(foobars))
+	helloWorld.SetEmbedded("foobars", jsonhal.Embedded(foobars))
 
 	// Assert JSON after marshalling is as expected
 	expected = bytes.NewBuffer([]byte{})
@@ -288,48 +288,48 @@ func TestHal(t *testing.T) {
 	// Add embedded foobars
 	foobars = []*Foobar{
 		&Foobar{
-			Hal: Hal{
-				Links: map[string]*Link{
-					"self": &Link{Href: "/v1/foo/bar/1"},
+			Hal: jsonhal.Hal{
+				Links: map[string]*jsonhal.Link{
+					"self": &jsonhal.Link{Href: "/v1/foo/bar/1"},
 				},
 			},
 			ID:   1,
 			Name: "Foo bar 1",
 		},
 		&Foobar{
-			Hal: Hal{
-				Links: map[string]*Link{
-					"self": &Link{Href: "/v1/foo/bar/2"},
+			Hal: jsonhal.Hal{
+				Links: map[string]*jsonhal.Link{
+					"self": &jsonhal.Link{Href: "/v1/foo/bar/2"},
 				},
 			},
 			ID:   2,
 			Name: "Foo bar 2",
 		},
 	}
-	helloWorld.SetEmbedded("foobars", Embedded(foobars))
+	helloWorld.SetEmbedded("foobars", jsonhal.Embedded(foobars))
 
 	// Add embedded quxes
 	quxes = []*Qux{
 		&Qux{
-			Hal: Hal{
-				Links: map[string]*Link{
-					"self": &Link{Href: "/v1/qux/1"},
+			Hal: jsonhal.Hal{
+				Links: map[string]*jsonhal.Link{
+					"self": &jsonhal.Link{Href: "/v1/qux/1"},
 				},
 			},
 			ID:   1,
 			Name: "Qux 1",
 		},
 		&Qux{
-			Hal: Hal{
-				Links: map[string]*Link{
-					"self": &Link{Href: "/v1/qux/2"},
+			Hal: jsonhal.Hal{
+				Links: map[string]*jsonhal.Link{
+					"self": &jsonhal.Link{Href: "/v1/qux/2"},
 				},
 			},
 			ID:   2,
 			Name: "Qux 2",
 		},
 	}
-	helloWorld.SetEmbedded("quxes", Embedded(quxes))
+	helloWorld.SetEmbedded("quxes", jsonhal.Embedded(quxes))
 
 	// Assert JSON after marshalling is as expected
 	expected = bytes.NewBuffer([]byte{})
@@ -348,7 +348,7 @@ func TestGetLink(t *testing.T) {
 	helloWorld := new(HelloWorld)
 
 	var (
-		link *Link
+		link *jsonhal.Link
 		err  error
 	)
 
@@ -385,7 +385,7 @@ func TestGetEmbedded(t *testing.T) {
 	helloWorld := new(HelloWorld)
 
 	var (
-		embedded Embedded
+		embedded jsonhal.Embedded
 		err      error
 		foobars  []*Foobar
 	)
@@ -402,7 +402,7 @@ func TestGetEmbedded(t *testing.T) {
 		&Foobar{ID: 1, Name: "Foo bar 1"},
 		&Foobar{ID: 2, Name: "Foo bar 2"},
 	}
-	helloWorld.SetEmbedded("foobars", Embedded(foobars))
+	helloWorld.SetEmbedded("foobars", jsonhal.Embedded(foobars))
 
 	// Test geting bogus embedded resources
 	embedded, err = helloWorld.GetEmbedded("bogus")
