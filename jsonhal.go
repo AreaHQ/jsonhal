@@ -69,6 +69,7 @@ func (h *Hal) GetEmbedded(name string) (Embedded, error) {
 	return embedded, nil
 }
 
+// DeleteEmbedded removes an embedded resource named name if it is found
 func (h *Hal) DeleteEmbedded(name string) {
 	if h.Embedded != nil {
 		delete(h.Embedded, name)
