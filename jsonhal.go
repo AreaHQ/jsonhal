@@ -30,6 +30,13 @@ func (h *Hal) SetLink(name, href, title string) {
 	h.Links[name] = &Link{Href: href, Title: title}
 }
 
+// DeleteLink removes a link named name if it is found
+func (h *Hal) DeleteLink(name string) {
+	if h.Links != nil {
+		delete(h.Links, name)
+	}
+}
+
 // GetLink returns a link by name or error
 func (h *Hal) GetLink(name string) (*Link, error) {
 	if h.Links == nil {
@@ -60,4 +67,11 @@ func (h *Hal) GetEmbedded(name string) (Embedded, error) {
 		return nil, fmt.Errorf("Embedded \"%s\" not found", name)
 	}
 	return embedded, nil
+}
+
+// DeleteEmbedded removes an embedded resource named name if it is found
+func (h *Hal) DeleteEmbedded(name string) {
+	if h.Embedded != nil {
+		delete(h.Embedded, name)
+	}
 }

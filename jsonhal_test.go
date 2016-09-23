@@ -381,6 +381,23 @@ func TestGetLink(t *testing.T) {
 	}
 }
 
+func TestDeleteLink(t *testing.T) {
+	helloWorld := new(HelloWorld)
+	helloWorld.SetLink(
+		"self",              // name
+		"/v1/hello/world/1", // href
+		"",                  // title
+	)
+	link, err := helloWorld.GetLink("self")
+	assert.NotNil(t, link)
+	assert.NoError(t, err)
+
+	helloWorld.DeleteLink("self")
+	link, err = helloWorld.GetLink("self")
+	assert.Nil(t, link)
+	assert.EqualError(t, err, "Link \"self\" not found")
+}
+
 func TestGetEmbedded(t *testing.T) {
 	helloWorld := new(HelloWorld)
 
@@ -421,4 +438,31 @@ func TestGetEmbedded(t *testing.T) {
 			assert.Equal(t, 2, reflectedValue.Len())
 		}
 	}
+}
+
+func TestDeleteEmbedded(t *testing.T) {
+	helloWorld := new(HelloWorld)
+	var (
+		embedded Embedded
+		err      error
+		foobars  []*Foobar
+	)
+
+	// Add embedded foobars
+	foobars = []*Foobar{
+		&Foobar{ID: 1, Name: "Foo bar 1"},
+		&Foobar{ID: 2, Name: "Foo bar 2"},
+	}
+	helloWorld.SetEmbedded("foobars", Embedded(foobars))
+
+	// Test geting valid embedded resources
+	embedded, err = helloWorld.GetEmbedded("foobars")
+	assert.NoError(t, err)
+	assert.NotNil(t, embedded)
+
+	helloWorld.DeleteEmbedded("foobars")
+	embedded, err = helloWorld.GetEmbedded("bogus")
+	assert.Nil(t, embedded)
+	assert.EqualError(t, err, "Embedded \"bogus\" not found")
+
 }
