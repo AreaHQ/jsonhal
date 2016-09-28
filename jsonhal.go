@@ -16,6 +16,26 @@ type Link struct {
 // Embedded represents a resource in "_embedded" object
 type Embedded interface{}
 
+// EmbedSetter is the interface that wraps the basic setEmbedded method.
+//
+// SetEmbedded adds a slice of objects under a named key in the embedded map
+type EmbedSetter interface {
+	SetEmbedded(name string, embedded Embedded)
+}
+
+// EmbedSetter is the interface that wraps the basic setEmbedded method.
+//
+// GetEmbedded returns a slice of embedded resources by name or error
+type EmbedGetter interface {
+	GetEmbedded(name string) (Embedded, error)
+}
+
+// Embeddeer is the interface that wraps the basic setEmbedded and getEmbedded methods.
+type Embedder interface {
+	EmbedSetter
+	EmbedGetter
+}
+
 // Hal is used for composition, include it as anonymous field in your structs
 type Hal struct {
 	Links    map[string]*Link    `json:"_links,omitempty"`
