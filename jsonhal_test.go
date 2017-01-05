@@ -7,8 +7,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/RichardKnop/jsonhal"
+	"github.com/stretchr/testify/assert"
 )
 
 // HelloWorld is a simple test struct
@@ -461,9 +461,7 @@ func TestUnmarshalingAndDecodeEmbedded(t *testing.T) {
 	assert.Equal(t, "/v1/hello/world?offset=2\u0026limit=2", self.Href)
 
 	f := new(Foobar)
-	if err := hw.DecodeEmbedded("foobar", f); err != nil {
-		log.Fatal(err)
-	}
+	assert.NoError(t, hw.DecodeEmbedded("foobar", f))
 	assert.Equal(t, uint(1), f.ID)
 	assert.Equal(t, "Foo bar 1", f.Name)
 
@@ -475,11 +473,31 @@ func TestUnmarshalingAndDecodeEmbedded(t *testing.T) {
 	}
 
 	foobars := make([]*Foobar, 0)
-	if err := hw.DecodeEmbedded("foobars", &foobars); err != nil {
-		log.Fatal(err)
-	}
+	assert.NoError(t, hw.DecodeEmbedded("foobars", &foobars))
 	assert.Equal(t, uint(1), foobars[0].ID)
 	assert.Equal(t, "Foo bar 1", foobars[0].Name)
 	assert.Equal(t, uint(2), foobars[1].ID)
 	assert.Equal(t, "Foo bar 2", foobars[1].Name)
+}
+
+func TestCountEmbedded(t *testing.T) {
+	hw := new(HelloWorld)
+	hw.SetEmbedded("foobar", jsonhal.Embedded(new(Foobar)))
+	c, err := hw.CountEmbedded("foobar")
+	assert.Equal(t, 0, c)
+	assert.Equal(t, "Embedded object is not a slice", err.Error())
+
+	hw = new(HelloWorld)
+	hw.SetEmbedded("foobars", jsonhal.Embedded(make([]*Foobar, 0)))
+	c, err = hw.CountEmbedded("foobars")
+	assert.Equal(t, 0, c)
+	assert.NoError(t, err)
+
+	foobars := []*Foobar{
+		&Foobar{ID: 1, Name: "Foo bar 1"},
+		&Foobar{ID: 2, Name: "Foo bar 2"},
+	}
+	hw.SetEmbedded("foobars", jsonhal.Embedded(foobars))
+	c, err = hw.CountEmbedded("foobars")
+	assert.NoError(t, err)
 }
