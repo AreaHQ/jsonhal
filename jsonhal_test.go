@@ -7,8 +7,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/RichardKnop/jsonhal"
 	"github.com/stretchr/testify/assert"
+	"github.com/RichardKnop/jsonhal"
 )
 
 // HelloWorld is a simple test struct
@@ -421,4 +421,65 @@ func TestGetEmbedded(t *testing.T) {
 			assert.Equal(t, 2, reflectedValue.Len())
 		}
 	}
+}
+
+func TestUnmarshalingAndDecodeEmbedded(t *testing.T) {
+	// Simplest case
+	hw := new(HelloWorld)
+	if err := json.Unmarshal(expectedJSON, hw); err != nil {
+		log.Fatal(err)
+	}
+	assert.Equal(t, uint(1), hw.ID)
+	assert.Equal(t, "Hello World", hw.Name)
+
+	// Single embedded object
+
+	hw = new(HelloWorld)
+	if err := json.Unmarshal(expectedJSON3, hw); err != nil {
+		log.Fatal(err)
+	}
+
+	next, err := hw.GetLink("next")
+	if err != nil {
+		log.Fatal(err)
+	}
+	assert.Equal(t, "", next.Title)
+	assert.Equal(t, "/v1/hello/world?offset=4\u0026limit=2", next.Href)
+
+	previous, err := hw.GetLink("previous")
+	if err != nil {
+		log.Fatal(err)
+	}
+	assert.Equal(t, "", previous.Title)
+	assert.Equal(t, "/v1/hello/world?offset=0\u0026limit=2", previous.Href)
+
+	self, err := hw.GetLink("self")
+	if err != nil {
+		log.Fatal(err)
+	}
+	assert.Equal(t, "", self.Title)
+	assert.Equal(t, "/v1/hello/world?offset=2\u0026limit=2", self.Href)
+
+	f := new(Foobar)
+	if err := hw.DecodeEmbedded("foobar", f); err != nil {
+		log.Fatal(err)
+	}
+	assert.Equal(t, uint(1), f.ID)
+	assert.Equal(t, "Foo bar 1", f.Name)
+
+	// Slice of ombedded objects
+
+	hw = new(HelloWorld)
+	if err := json.Unmarshal(expectedJSON4, hw); err != nil {
+		log.Fatal(err)
+	}
+
+	foobars := make([]*Foobar, 0)
+	if err := hw.DecodeEmbedded("foobars", &foobars); err != nil {
+		log.Fatal(err)
+	}
+	assert.Equal(t, uint(1), foobars[0].ID)
+	assert.Equal(t, "Foo bar 1", foobars[0].Name)
+	assert.Equal(t, uint(2), foobars[1].ID)
+	assert.Equal(t, "Foo bar 2", foobars[1].Name)
 }
