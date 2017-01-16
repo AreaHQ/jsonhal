@@ -465,7 +465,7 @@ func TestUnmarshalingAndDecodeEmbedded(t *testing.T) {
 	assert.Equal(t, uint(1), f.ID)
 	assert.Equal(t, "Foo bar 1", f.Name)
 
-	// Slice of ombedded objects
+	// Slice of embedded objects
 
 	hw = new(HelloWorld)
 	if err := json.Unmarshal(expectedJSON4, hw); err != nil {
