@@ -72,8 +72,8 @@ func (h *Hal) CountEmbedded(name string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	if reflect.TypeOf(interface{}(e)).Kind() != reflect.Slice {
-		return 0, errors.New("Embedded object is not a slice")
+	if reflect.TypeOf(interface{}(e)).Kind() != reflect.Slice && reflect.TypeOf(interface{}(e)).Kind() != reflect.Map {
+		return 0, errors.New("Embedded object is not a slice or a map")
 	}
 	return reflect.ValueOf(interface{}(e)).Len(), nil
 }

@@ -485,7 +485,7 @@ func TestCountEmbedded(t *testing.T) {
 	hw.SetEmbedded("foobar", jsonhal.Embedded(new(Foobar)))
 	c, err := hw.CountEmbedded("foobar")
 	assert.Equal(t, 0, c)
-	assert.Equal(t, "Embedded object is not a slice", err.Error())
+	assert.Equal(t, "Embedded object is not a slice or a map", err.Error())
 
 	hw = new(HelloWorld)
 	hw.SetEmbedded("foobars", jsonhal.Embedded(make([]*Foobar, 0)))
@@ -499,5 +499,14 @@ func TestCountEmbedded(t *testing.T) {
 	}
 	hw.SetEmbedded("foobars", jsonhal.Embedded(foobars))
 	c, err = hw.CountEmbedded("foobars")
+	assert.Equal(t, 2, c)
+	assert.NoError(t, err)
+
+	bars := make(map[string]string, 2)
+	bars["a"] = "b"
+	bars["c"] = "d"
+	hw.SetEmbedded("bars", jsonhal.Embedded(bars))
+	c, err = hw.CountEmbedded("bars")
+	assert.Equal(t, 2, c)
 	assert.NoError(t, err)
 }
