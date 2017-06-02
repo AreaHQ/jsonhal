@@ -1,4 +1,4 @@
-# jsonhal
+## jsonhal
 
 A simple Go package to make custom structs marshal into [HAL](http://stateless.co/hal_specification.html) compatible JSON responses.
 
