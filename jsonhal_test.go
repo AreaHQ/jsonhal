@@ -244,19 +244,19 @@ func TestHal(t *testing.T) {
 
 	// Add embedded foobars
 	foobars = []*Foobar{
-		&Foobar{
+		{
 			Hal: jsonhal.Hal{
 				Links: map[string]*jsonhal.Link{
-					"self": &jsonhal.Link{Href: "/v1/foo/bar/1"},
+					"self": {Href: "/v1/foo/bar/1"},
 				},
 			},
 			ID:   1,
 			Name: "Foo bar 1",
 		},
-		&Foobar{
+		{
 			Hal: jsonhal.Hal{
 				Links: map[string]*jsonhal.Link{
-					"self": &jsonhal.Link{Href: "/v1/foo/bar/2"},
+					"self": {Href: "/v1/foo/bar/2"},
 				},
 			},
 			ID:   2,
@@ -287,19 +287,19 @@ func TestHal(t *testing.T) {
 
 	// Add embedded foobars
 	foobars = []*Foobar{
-		&Foobar{
+		{
 			Hal: jsonhal.Hal{
 				Links: map[string]*jsonhal.Link{
-					"self": &jsonhal.Link{Href: "/v1/foo/bar/1"},
+					"self": {Href: "/v1/foo/bar/1"},
 				},
 			},
 			ID:   1,
 			Name: "Foo bar 1",
 		},
-		&Foobar{
+		{
 			Hal: jsonhal.Hal{
 				Links: map[string]*jsonhal.Link{
-					"self": &jsonhal.Link{Href: "/v1/foo/bar/2"},
+					"self": {Href: "/v1/foo/bar/2"},
 				},
 			},
 			ID:   2,
@@ -310,19 +310,19 @@ func TestHal(t *testing.T) {
 
 	// Add embedded quxes
 	quxes = []*Qux{
-		&Qux{
+		{
 			Hal: jsonhal.Hal{
 				Links: map[string]*jsonhal.Link{
-					"self": &jsonhal.Link{Href: "/v1/qux/1"},
+					"self": {Href: "/v1/qux/1"},
 				},
 			},
 			ID:   1,
 			Name: "Qux 1",
 		},
-		&Qux{
+		{
 			Hal: jsonhal.Hal{
 				Links: map[string]*jsonhal.Link{
-					"self": &jsonhal.Link{Href: "/v1/qux/2"},
+					"self": {Href: "/v1/qux/2"},
 				},
 			},
 			ID:   2,
@@ -416,8 +416,8 @@ func TestGetEmbedded(t *testing.T) {
 
 	// Add embedded foobars
 	foobars = []*Foobar{
-		&Foobar{ID: 1, Name: "Foo bar 1"},
-		&Foobar{ID: 2, Name: "Foo bar 2"},
+		{ID: 1, Name: "Foo bar 1"},
+		{ID: 2, Name: "Foo bar 2"},
 	}
 	helloWorld.SetEmbedded("foobars", jsonhal.Embedded(foobars))
 
@@ -511,8 +511,8 @@ func TestCountEmbedded(t *testing.T) {
 	assert.NoError(t, err)
 
 	foobars := []*Foobar{
-		&Foobar{ID: 1, Name: "Foo bar 1"},
-		&Foobar{ID: 2, Name: "Foo bar 2"},
+		{ID: 1, Name: "Foo bar 1"},
+		{ID: 2, Name: "Foo bar 2"},
 	}
 	hw.SetEmbedded("foobars", jsonhal.Embedded(foobars))
 	c, err = hw.CountEmbedded("foobars")
@@ -538,8 +538,8 @@ func TestDeleteEmbedded(t *testing.T) {
 
 	// Add embedded foobars
 	foobars = []*Foobar{
-		&Foobar{ID: 1, Name: "Foo bar 1"},
-		&Foobar{ID: 2, Name: "Foo bar 2"},
+		{ID: 1, Name: "Foo bar 1"},
+		{ID: 2, Name: "Foo bar 2"},
 	}
 	helloWorld.SetEmbedded("foobars", jsonhal.Embedded(foobars))
 
