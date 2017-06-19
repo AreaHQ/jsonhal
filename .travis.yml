@@ -21,7 +21,7 @@ install:
 script:
   - make lint
   - vendorcheck ./...
-  - make test
+  - make test-with-coverage
 
 after_script:
   - make golint
