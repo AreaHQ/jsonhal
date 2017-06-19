@@ -159,6 +159,8 @@ var expectedJSON5 = []byte(`{
 }`)
 
 func TestHal(t *testing.T) {
+	t.Parallel()
+
 	var (
 		helloWorld *HelloWorld
 		expected   *bytes.Buffer
@@ -345,6 +347,8 @@ func TestHal(t *testing.T) {
 }
 
 func TestGetLink(t *testing.T) {
+	t.Parallel()
+
 	helloWorld := new(HelloWorld)
 
 	var (
@@ -382,6 +386,8 @@ func TestGetLink(t *testing.T) {
 }
 
 func TestDeleteLink(t *testing.T) {
+	t.Parallel()
+
 	helloWorld := new(HelloWorld)
 	helloWorld.SetLink(
 		"self",              // name
@@ -399,6 +405,8 @@ func TestDeleteLink(t *testing.T) {
 }
 
 func TestGetEmbedded(t *testing.T) {
+	t.Parallel()
+
 	helloWorld := new(HelloWorld)
 
 	var (
@@ -441,6 +449,8 @@ func TestGetEmbedded(t *testing.T) {
 }
 
 func TestUnmarshalingAndDecodeEmbedded(t *testing.T) {
+	t.Parallel()
+
 	// Simplest case
 	hw := new(HelloWorld)
 	if err := json.Unmarshal(expectedJSON, hw); err != nil {
@@ -498,6 +508,8 @@ func TestUnmarshalingAndDecodeEmbedded(t *testing.T) {
 }
 
 func TestCountEmbedded(t *testing.T) {
+	t.Parallel()
+
 	hw := new(HelloWorld)
 	hw.SetEmbedded("foobar", jsonhal.Embedded(new(Foobar)))
 	c, err := hw.CountEmbedded("foobar")
@@ -529,6 +541,8 @@ func TestCountEmbedded(t *testing.T) {
 }
 
 func TestDeleteEmbedded(t *testing.T) {
+	t.Parallel()
+
 	helloWorld := new(HelloWorld)
 	var (
 		embedded jsonhal.Embedded
