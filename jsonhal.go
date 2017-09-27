@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"time"
 
 	"github.com/mitchellh/mapstructure"
 )
@@ -44,6 +45,7 @@ type Embedder interface {
 type Hal struct {
 	Links    map[string]*Link    `json:"_links,omitempty"`
 	Embedded map[string]Embedded `json:"_embedded,omitempty"`
+	decoder  *mapstructure.Decoder
 }
 
 // SetLink sets a link (self, next, etc). Title argument is optional
@@ -105,13 +107,46 @@ func (h *Hal) CountEmbedded(name string) (int, error) {
 	return reflect.ValueOf(interface{}(e)).Len(), nil
 }
 
+// decodeHook is used to support datatypes that mapstructure does not support native
+func (h *Hal) decodeHook(f reflect.Type, t reflect.Type, data interface{}) (interface{}, error) {
+
+	// only if target datatype is time.Time  and if source datatype is string
+	if t == reflect.TypeOf(time.Time{}) && f == reflect.TypeOf("") {
+		return time.Parse(time.RFC3339, data.(string))
+	}
+
+	//everything else would not be handled for now
+	return data, nil
+}
+
 // DecodeEmbedded decodes embedded objects into a struct
-func (h *Hal) DecodeEmbedded(name string, result interface{}) error {
+func (h *Hal) DecodeEmbedded(name string, result interface{}) (err error) {
+	var dec *mapstructure.Decoder
+	defer func() {
+		if r := recover(); r != nil {
+			err = r.(error)
+
+		}
+	}()
+
 	e, err := h.GetEmbedded(name)
 	if err != nil {
-		return err
+		panic(err)
 	}
-	return mapstructure.Decode(interface{}(e), result)
+	//setup a new decoder if not already present
+	if h.decoder == nil {
+		dec, err = mapstructure.NewDecoder(&mapstructure.DecoderConfig{Result: result, DecodeHook: h.decodeHook})
+		if err != nil {
+			panic(err)
+		}
+		h.decoder = dec
+	}
+
+	err = h.decoder.Decode(e)
+	if err != nil {
+		panic(err)
+	}
+	return nil
 }
 
 // DeleteEmbedded removes an embedded resource named name if it is found
