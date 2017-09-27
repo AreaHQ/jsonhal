@@ -6,8 +6,9 @@ import (
 	"log"
 	"reflect"
 	"testing"
+	"time"
 
-	"github.com/RichardKnop/jsonhal"
+	"github.com/luedigernet/jsonhal"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,8 +22,9 @@ type HelloWorld struct {
 // Foobar is a simple test struct
 type Foobar struct {
 	jsonhal.Hal
-	ID   uint   `json:"id"`
-	Name string `json:"name"`
+	ID   uint      `json:"id"`
+	Name string    `json:"name"`
+	Date time.Time `json:"date"`
 }
 
 // Qux is a simple test struct
@@ -67,7 +69,8 @@ var expectedJSON3 = []byte(`{
 				}
 			},
 			"id": 1,
-			"name": "Foo bar 1"
+			"name": "Foo bar 1",
+            "date":"2017-09-12T08:45:20Z"
 		}
 	},
 	"id": 1,
@@ -89,7 +92,8 @@ var expectedJSON4 = []byte(`{
 					}
 				},
 				"id": 1,
-				"name": "Foo bar 1"
+				"name": "Foo bar 1",
+                "date":"2017-09-12T08:45:20Z"
 			},
 			{
 				"_links": {
@@ -98,7 +102,8 @@ var expectedJSON4 = []byte(`{
 					}
 				},
 				"id": 2,
-				"name": "Foo bar 2"
+				"name": "Foo bar 2",
+            	"date":"2017-09-12T08:45:20Z"
 			}
 		]
 	},
@@ -121,7 +126,8 @@ var expectedJSON5 = []byte(`{
 					}
 				},
 				"id": 1,
-				"name": "Foo bar 1"
+				"name": "Foo bar 1",
+            	"date":"2017-09-12T08:45:20Z"
 			},
 			{
 				"_links": {
@@ -130,7 +136,8 @@ var expectedJSON5 = []byte(`{
 					}
 				},
 				"id": 2,
-				"name": "Foo bar 2"
+				"name": "Foo bar 2",
+            	"date":"2017-09-12T08:45:20Z"
 			}
 		],
 		"quxes": [
@@ -204,6 +211,7 @@ func TestHal(t *testing.T) {
 	assert.Equal(t, expected.String(), string(actual))
 
 	// Let's add more links and a single embedded resource
+	date, err := time.Parse(time.RFC3339, "2017-09-12T08:45:20Z")
 	helloWorld = &HelloWorld{ID: 1, Name: "Hello World"}
 	helloWorld.SetLink(
 		"self", // name
@@ -220,7 +228,7 @@ func TestHal(t *testing.T) {
 		"/v1/hello/world?offset=0&limit=2", // href
 		"", // title
 	)
-	foobar = &Foobar{ID: 1, Name: "Foo bar 1"}
+	foobar = &Foobar{ID: 1, Name: "Foo bar 1", Date: date}
 	foobar.SetLink("self", "/v1/foo/bar/1", "")
 	helloWorld.SetEmbedded("foobar", jsonhal.Embedded(foobar))
 
@@ -254,6 +262,7 @@ func TestHal(t *testing.T) {
 			},
 			ID:   1,
 			Name: "Foo bar 1",
+			Date: date,
 		},
 		{
 			Hal: jsonhal.Hal{
@@ -263,6 +272,7 @@ func TestHal(t *testing.T) {
 			},
 			ID:   2,
 			Name: "Foo bar 2",
+			Date: date,
 		},
 	}
 	helloWorld.SetEmbedded("foobars", jsonhal.Embedded(foobars))
@@ -297,6 +307,7 @@ func TestHal(t *testing.T) {
 			},
 			ID:   1,
 			Name: "Foo bar 1",
+			Date: date,
 		},
 		{
 			Hal: jsonhal.Hal{
@@ -306,6 +317,7 @@ func TestHal(t *testing.T) {
 			},
 			ID:   2,
 			Name: "Foo bar 2",
+			Date: date,
 		},
 	}
 	helloWorld.SetEmbedded("foobars", jsonhal.Embedded(foobars))
@@ -491,6 +503,7 @@ func TestUnmarshalingAndDecodeEmbedded(t *testing.T) {
 	assert.NoError(t, hw.DecodeEmbedded("foobar", f))
 	assert.Equal(t, uint(1), f.ID)
 	assert.Equal(t, "Foo bar 1", f.Name)
+	assert.Equal(t, "2017-09-12T08:45:20Z", f.Date.Format(time.RFC3339))
 
 	// Slice of embedded objects
 
