@@ -121,6 +121,7 @@ func (h *Hal) decodeHook(f reflect.Type, t reflect.Type, data interface{}) (inte
 
 // DecodeEmbedded decodes embedded objects into a struct
 func (h *Hal) DecodeEmbedded(name string, result interface{}) (err error) {
+	var dec *mapstructure.Decoder
 	defer func() {
 		if r := recover(); r != nil {
 			err = r.(error)
@@ -134,7 +135,7 @@ func (h *Hal) DecodeEmbedded(name string, result interface{}) (err error) {
 	}
 	//setup a new decoder if not already present
 	if h.decoder == nil {
-		dec, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{Result: result, DecodeHook: h.decodeHook})
+		dec, err = mapstructure.NewDecoder(&mapstructure.DecoderConfig{Result: result, DecodeHook: h.decodeHook})
 		if err != nil {
 			panic(err)
 		}

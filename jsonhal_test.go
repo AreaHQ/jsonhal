@@ -211,7 +211,7 @@ func TestHal(t *testing.T) {
 	assert.Equal(t, expected.String(), string(actual))
 
 	// Let's add more links and a single embedded resource
-	date, err := time.Parse(time.RFC3339, "2017-09-12T08:45:20Z")
+	date, _ := time.Parse(time.RFC3339, "2017-09-12T08:45:20Z")
 	helloWorld = &HelloWorld{ID: 1, Name: "Hello World"}
 	helloWorld.SetLink(
 		"self", // name
