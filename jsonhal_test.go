@@ -8,7 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/luedigernet/jsonhal"
+	"github.com/RichardKnop/jsonhal"
+
 	"github.com/stretchr/testify/assert"
 )
 
