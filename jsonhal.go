@@ -43,9 +43,9 @@ type Embedder interface {
 
 // Hal is used for composition, include it as anonymous field in your structs
 type Hal struct {
-	Links    map[string]*Link      `json:"_links,omitempty"`
-	Embedded map[string]Embedded   `json:"_embedded,omitempty"`
-	decoder  *mapstructure.Decoder `json:"-"`
+	Links    map[string]*Link    `json:"_links,omitempty"`
+	Embedded map[string]Embedded `json:"_embedded,omitempty"`
+	decoder  *mapstructure.Decoder
 }
 
 // SetLink sets a link (self, next, etc). Title argument is optional
