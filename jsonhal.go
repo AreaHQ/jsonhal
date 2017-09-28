@@ -14,8 +14,8 @@ import (
 
 // Link represents a link in "_links" object
 type Link struct {
-	Href  string `json:"href"`
-	Title string `json:"title,omitempty"`
+	Href  string `json:"href" mapstructure:"href"`
+	Title string `json:"title,omitempty" mapstructure:"title"`
 }
 
 // Embedded represents a resource in "_embedded" object
@@ -43,8 +43,8 @@ type Embedder interface {
 
 // Hal is used for composition, include it as anonymous field in your structs
 type Hal struct {
-	Links    map[string]*Link    `json:"_links,omitempty"`
-	Embedded map[string]Embedded `json:"_embedded,omitempty"`
+	Links    map[string]*Link    `json:"_links,omitempty" mapstructure:"_links"`
+	Embedded map[string]Embedded `json:"_embedded,omitempty" mapstructure:"_embedded"`
 	decoder  *mapstructure.Decoder
 }
 
