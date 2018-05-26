@@ -5,10 +5,6 @@ A simple Go package to make custom structs marshal into [HAL](http://stateless.c
 [![Travis Status for RichardKnop/jsonhal](https://travis-ci.org/RichardKnop/jsonhal.svg?branch=master&label=linux+build)](https://travis-ci.org/RichardKnop/jsonhal)
 [![godoc for RichardKnop/jsonhal](https://godoc.org/github.com/nathany/looper?status.svg)](http://godoc.org/github.com/RichardKnop/jsonhal)
 [![codecov for RichardKnop/jsonhal](https://codecov.io/gh/RichardKnop/jsonhal/branch/master/graph/badge.svg)](https://codecov.io/gh/RichardKnop/jsonhal)
-[![Codeship Status for RichardKnop/jsonhal](https://codeship.com/projects/8537a230-37b2-0134-07fa-02b643534a44/status?branch=master)](https://codeship.com/projects/165842)
-
-[![Sourcegraph for RichardKnop/jsonhal](https://sourcegraph.com/github.com/RichardKnop/jsonhal/-/badge.svg)](https://sourcegraph.com/github.com/RichardKnop/jsonhal?badge)
-[![Donate Bitcoin](https://img.shields.io/badge/donate-bitcoin-orange.svg)](https://richardknop.github.io/donate/)
 
 ---
 
