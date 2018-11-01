@@ -8,12 +8,13 @@ fmt:
 	done;
 
 lint:
-	gometalinter --exclude=vendor/ --tests --config=gometalinter.json --disable-all -E vet -E gofmt -E misspell -E ineffassign -E goimports -E deadcode ./...
+	gometalinter --tests --disable-all --deadline=120s -E vet -E gofmt -E misspell -E ineffassign -E goimports -E deadcode ./...
 
 golint:
 	for pkg in ${PACKAGES}; do \
-		golint $$pkg; \
-	done;
+		golint -set_exit_status $$pkg || GOLINT_FAILED=1; \
+	done; \
+	[ -z "$$GOLINT_FAILED" ]
 
 test:
 	TEST_FAILED= ; \
