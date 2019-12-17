@@ -1,8 +1,13 @@
-[![Codeship Status for AreaHQ/jsonhal](https://codeship.com/projects/b2f1dac0-9da7-0133-7683-1a74f7994c2d/status?branch=master)](https://codeship.com/projects/127557)
-
-# jsonhal
+## jsonhal
 
 A simple Go package to make custom structs marshal into [HAL](http://stateless.co/hal_specification.html) compatible JSON responses.
+
+[![Travis Status for RichardKnop/jsonhal](https://travis-ci.org/RichardKnop/jsonhal.svg?branch=master&label=linux+build)](https://travis-ci.org/RichardKnop/jsonhal)
+[![godoc for RichardKnop/jsonhal](https://godoc.org/github.com/nathany/looper?status.svg)](http://godoc.org/github.com/RichardKnop/jsonhal)
+[![codecov for RichardKnop/jsonhal](https://codecov.io/gh/RichardKnop/jsonhal/branch/master/graph/badge.svg)](https://codecov.io/gh/RichardKnop/jsonhal)
+
+---
+
 
 Just add `jsonhal.Hal` as anonymous field to your structs and use `SetLink` to set hyperlinks and optionally `SetEmbedded` to set embedded resources.
 
@@ -15,7 +20,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/AreaHQ/jsonhal"
+	"github.com/RichardKnop/jsonhal"
 )
 
 // HelloWorld ...
